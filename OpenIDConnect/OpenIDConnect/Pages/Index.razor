@@ -1,0 +1,31 @@
+﻿@page "/"
+
+@inject AuthenticationStateProvider AuthState
+@inject TokenProvider TokenProvider 
+
+@using System.Security.Claims
+
+<h1>Hello, @Username</h1>
+
+<p>Welcome to your new app.</p>
+
+<label for="token">Access Token</label><br/>
+<textarea id="token" name="token" cols="50" rows="10">@TokenProvider.AccessToken</textarea>
+
+@code
+    {
+    private string Username = "Anonymous User";
+  
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+        Username = state.User.Claims
+        .Where(c => c.Type.Equals("name"))
+        .Select(c => c.Value)
+        .FirstOrDefault() ?? "Anonymous User";
+
+        await base.OnInitializedAsync();
+    }
+
+}
